@@ -33,3 +33,9 @@ model Role {
   name        String
   description String
 }
+
+model Permissions {
+  id          String @id @default(cuid())
+  name        String
+  description String
+}
