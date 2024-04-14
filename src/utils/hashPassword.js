@@ -10,6 +10,12 @@ function hashPassword(password) {
   }
 }
 
+async function comparePasswords(password, UserPassword) {
+  const validPassword = await bcrypt.compare(password, UserPassword);
+  return validPassword;
+}
+
 module.exports = {
-  hashPassword
+  hashPassword,
+  comparePasswords
 }
