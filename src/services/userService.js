@@ -19,7 +19,8 @@ class UserService {
       data: {
         name: data.name,
         email: data.email,
-        senha: data.senha,
+        password: data.password,
+        salt: data.salt
       },
     });
   }
