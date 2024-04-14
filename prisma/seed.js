@@ -27,7 +27,7 @@ const seed = async () => {
     ];
 
     for (const product of products) {
-      await prisma.products.create({
+      await prisma.product.create({
         data: {
           name: product.name,
           price: product.price,
