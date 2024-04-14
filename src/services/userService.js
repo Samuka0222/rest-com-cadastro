@@ -3,7 +3,15 @@ const prisma = new PrismaClient();
 
 class UserService {
   static async getAllUsers() {
-    return await prisma.user.findMany();
+    return await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        password: false,
+        salt: false,
+      }
+    });
   }
 
   static async getUserById(id) {
@@ -11,6 +19,13 @@ class UserService {
       where: {
         id: id,
       },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        password: false,
+        salt: false,
+      }
     });
   }
 

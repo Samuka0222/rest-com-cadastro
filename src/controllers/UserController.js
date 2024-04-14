@@ -33,7 +33,7 @@ class UserController {
         password: hashedPassword.hashPassword,
         salt: hashedPassword.salt
       });
-      res.status(201).json(newUser);
+      res.status(201).send({ message: "Usuário cadastrado com sucesso!" });
     } catch (error) {
       console.log("Message error: ", error.message);
       res.status(400).send({ message: error.message });
@@ -45,7 +45,7 @@ class UserController {
       const { id } = req.params;
       const { ...data } = req.body;
       const updatedUser = await UserService.updateUser(id, data);
-      res.status(200).json(updatedUser);
+      res.status(200).send({ message: "Usuário atualizado com sucesso!" });
     } catch (error) {
       console.log("Message error: ", error.message);
       res.status(400).send({ message: error.message });
