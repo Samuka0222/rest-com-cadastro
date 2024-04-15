@@ -4,7 +4,11 @@ const prisma = new PrismaClient();
 
 class RoleService {
   static async getAllRoles() {
-    return await prisma.role.findMany();
+    return await prisma.role.findMany({
+      include: {
+        Permissions: true,
+      }
+    });
   }
 
   static async getRoleById(id) {

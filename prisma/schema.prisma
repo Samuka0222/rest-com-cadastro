@@ -21,20 +21,29 @@ model Product {
 }
 
 model User {
-  id       String @id @default(cuid())
-  name     String
-  email    String @unique
-  password String
+  id          String        @id @default(cuid())
+  name        String
+  email       String        @unique
+  password    String
+  Role        Role[]
+  Permissions Permissions[]
 }
 
 model Role {
-  id          String @id @default(cuid())
+  id          String        @id @default(cuid())
   name        String
   description String
+  userId      String?
+  user        User?         @relation(fields: [userId], references: [id])
+  Permissions Permissions[]
 }
 
 model Permissions {
-  id          String @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   description String
+  userId      String?
+  user        User?   @relation(fields: [userId], references: [id])
+  roleId      String?
+  role        Role?   @relation(fields: [roleId], references: [id])
 }
