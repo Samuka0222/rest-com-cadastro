@@ -9,7 +9,6 @@ class UserService {
         name: true,
         email: true,
         password: false,
-        salt: false,
       },
     });
   }
@@ -24,7 +23,6 @@ class UserService {
         name: true,
         email: true,
         password: false,
-        salt: false,
       },
     });
   }
@@ -35,7 +33,6 @@ class UserService {
         name: data.name,
         email: data.email,
         password: data.password,
-        salt: data.salt,
       },
     });
   }

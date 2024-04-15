@@ -1,5 +1,5 @@
 const UserService = require("../services/userService.js");
-const { hashPassword } = require("../utils/hashPassword.js")
+const { hashPassword } = require("../utils/hashPassword.js");
 
 class UserController {
   static async getAllUsers(req, res) {
@@ -27,11 +27,10 @@ class UserController {
     try {
       const { name, email, password } = req.body;
       const hashedPassword = hashPassword(password);
-      const newUser = await UserService.createUser({
+      await UserService.createUser({
         name,
         email,
         password: hashedPassword.hashPassword,
-        salt: hashedPassword.salt
       });
       res.status(201).send({ message: "Usuário cadastrado com sucesso!" });
     } catch (error) {
@@ -44,7 +43,7 @@ class UserController {
     try {
       const { id } = req.params;
       const { ...data } = req.body;
-      const updatedUser = await UserService.updateUser(id, data);
+      await UserService.updateUser(id, data);
       res.status(200).send({ message: "Usuário atualizado com sucesso!" });
     } catch (error) {
       console.log("Message error: ", error.message);
@@ -56,7 +55,7 @@ class UserController {
     try {
       const { id } = req.params;
       await UserService.deleteUser(id);
-      res.status(200).send({ message: "Usuário deletado com sucesso!"});
+      res.status(200).send({ message: "Usuário deletado com sucesso!" });
     } catch (error) {
       console.log("Message error: ", error.message);
       res.status(400).send({ message: error.message });

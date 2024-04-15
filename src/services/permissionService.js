@@ -26,6 +26,37 @@ class PermissionService {
       throw new Error("Erro ao cadastrar a Role.");
     }
   }
+
+  static async getAllPermissions() {
+    return await prisma.permissions.findMany();
+  }
+
+  static async getPermissionById(id) {
+    return await prisma.permissions.findFirst({
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  static async updatePermission(id, data) {
+    return await prisma.permissions.update({
+      where: {
+        id: id,
+      },
+      data: {
+        ...data,
+      },
+    });
+  }
+
+  static async deletePermission(id) {
+    return await prisma.permissions.delete({
+      where: {
+        id: id,
+      },
+    });
+  }
 }
 
 module.exports = PermissionService;
