@@ -1,6 +1,4 @@
-// TODO: Refator a importação do PrismaClient, criar um variavel em Utils
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const prisma = require("../utils/prismaClient.js");
 
 class RoleService {
   static async getAllRoles() {

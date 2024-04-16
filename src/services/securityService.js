@@ -1,8 +1,5 @@
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
-
+const prisma = require("../utils/prismaClient.js");
 const register = require("../utils/registerRoleAndPermission.js");
-
 class SecurityService {
   async registerAcl(userId, roles = [], permissions = []) {
     const user = await prisma.user.findFirst({

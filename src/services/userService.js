@@ -1,29 +1,16 @@
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const prisma = require("../utils/prismaClient.js");
 
 class UserService {
   static async getAllUsers() {
     return await prisma.user.findMany({
-      include: {
-        Role: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        Permissions: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-      // select: {
-      //   id: true,
-      //   name: true,
-      //   email: true,
-      //   password: false,
-      // },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        password: false,
+        Permissions: true,
+        Role: true,
+      }
     });
   }
 

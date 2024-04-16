@@ -1,5 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const prisma = require("./prismaClient.js");
 
 const registerRole = async (userId, roleId) => {
   await prisma.user.update({

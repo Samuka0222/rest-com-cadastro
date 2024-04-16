@@ -1,6 +1,5 @@
-const { PrismaClient } = require("@prisma/client");
+const prisma = require("../utils/prismaClient.js");
 const { Decimal } = require("@prisma/client/runtime/library");
-const prisma = new PrismaClient();
 
 class ProductService {
   static async getAllProducts() {
