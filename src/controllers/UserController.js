@@ -30,7 +30,7 @@ class UserController {
       await UserService.createUser({
         name,
         email,
-        password: hashedPassword.hashPassword,
+        password: hashedPassword,
       });
       res.status(201).send({ message: "Usuário cadastrado com sucesso!" });
     } catch (error) {

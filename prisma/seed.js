@@ -1,6 +1,8 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
+const { hashPassword } = require("../src/utils/hashPassword.js")
+
 const seed = async () => {
   try {
     const products = [
@@ -80,6 +82,29 @@ const seed = async () => {
         data: {
           name: permission.name,
           description: permission.description,
+        },
+      });
+    }
+
+    const users = [
+      {
+        name: "Carlinhos",
+        email: "carlinhos@gmail.com",
+        password: "123",
+      },
+      {
+        name: "Teste",
+        email: "teste@gmail.com",
+        password: "123",
+      }
+    ];
+
+    for (const user of users) {
+      await prisma.user.create({
+        data: {
+          name: user.name,
+          email: user.email,
+          password: hashPassword(user.password)
         },
       });
     }

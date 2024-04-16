@@ -4,12 +4,26 @@ const prisma = new PrismaClient();
 class UserService {
   static async getAllUsers() {
     return await prisma.user.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        password: false,
+      include: {
+        Role: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        Permissions: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
+      // select: {
+      //   id: true,
+      //   name: true,
+      //   email: true,
+      //   password: false,
+      // },
     });
   }
 

@@ -1,8 +1,10 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
+const register = require("../utils/registerRoleAndPermission.js");
+
 class SecurityService {
-  async registerAcl(userId, roles, permissions) {
+  async registerAcl(userId, roles = [], permissions = []) {
     const user = await prisma.user.findFirst({
       where: {
         id: userId,
@@ -17,103 +19,75 @@ class SecurityService {
       throw new Error("Usuário não encontrado.");
     }
 
-    const registeredRoles = await prisma.role.findMany({
-      where: {
-        id: {
-          in: user.Role.map((role) => role.id),
+    const [registeredRoles, registeredPermissions] = await Promise.all([
+      prisma.role.findMany({
+        where: {
+          id: {
+            in: user.Role.map((role) => role.id),
+          },
         },
-      },
-    });
-
-    const registeredPermissions = await prisma.permissions.findMany({
-      where: {
-        id: {
-          in: user.Permissions.map((permission) => permission.id),
+      }),
+      prisma.permissions.findMany({
+        where: {
+          id: {
+            in: user.Permissions.map((permission) => permission.id),
+          },
         },
-      },
-    });
+      }),
+    ]);
+    const registeredRolesId = registeredRoles.map((role) => role.id);
+    const registeredPermissionsId = registeredPermissions.map(
+      (permission) => permission.id
+    );
 
     if (registeredRoles.length > 0) {
       try {
-        registeredRoles.forEach(async (role) => {
-          await prisma.user.update({
-            where: {
-              id: userId,
-            },
-            data: {
-              Role: {
-                disconnect: {
-                  id: role.id,
-                },
-              },
-            },
-          });
-        });
+        const missingRoles = roles.filter(
+          (missingRole) => !registeredRolesId.includes(missingRole)
+        );
+        missingRoles.forEach(
+          async (role) => await register.registerRole(userId, role)
+        );
       } catch (error) {
         throw new Error("Não foi possível excluir role(s) já registrada");
       }
+    } else {
+      roles.forEach(async (role) => await register.registerRole(userId, role));
     }
 
     if (registeredPermissions.length > 0) {
       try {
-        registeredPermissions.forEach(async (permission) => {
-          await prisma.user.update({
-            where: {
-              id: userId,
-            },
-            data: {
-              Permissions: {
-                disconnect: {
-                  id: permission.id,
-                },
-              },
-            },
-          });
-        });
+        const missingPermissions = permissions.filter(
+          (missingPermission) =>
+            !registeredPermissionsId.includes(missingPermission)
+        );
+        missingPermissions.forEach(
+          async (permission) =>
+            await register.registerPermissionOnUser(userId, permission)
+        );
       } catch (error) {
         throw new Error("Não foi possível excluir permissões já registradas");
       }
+    } else {
+      permissions.forEach(
+        async (permission) =>
+          await register.registerPermissionOnUser(userId, permission)
+      );
     }
 
-    roles.forEach(async (role) => {
-      await prisma.user.update({
-        where: {
-          id: userId,
-        },
-        data: {
-          Role: {
-            connect: {
-              id: role,
-            },
-          },
-        },
-      });
-    });
-
-    permissions.forEach(async (permission) => {
-      await prisma.user.update({
-        where: {
-          id: userId,
-        },
-        data: {
-          Permissions: {
-            connect: {
-              id: permission,
-            },
-          },
-        },
-      });
-    });
-
-    return await prisma.user.findFirst({
+    const updatedUser = await prisma.user.findFirst({
       where: {
         id: userId,
       },
-      include: {
+      select: {
+        name: true,
+        email: true,
         Role: true,
         Permissions: true,
+        password: false,
       },
     });
+    return updatedUser;
   }
 
   async registerPermissionsRoles(roleId, permissions) {
@@ -124,7 +98,7 @@ class SecurityService {
       include: {
         Permissions: true,
       },
-    })
+    });
 
     if (!role) {
       throw new Error("Role não encontrada.");
@@ -137,42 +111,29 @@ class SecurityService {
         },
       },
     });
+    const registeredPermissionsId = registeredPermissions.map(
+      (permission) => permission.id
+    );
 
     if (registeredPermissions.length > 0) {
       try {
-        registeredPermissions.forEach(async (permission) => {
-          await prisma.role.update({
-            where: {
-              id: roleId,
-            },
-            data: {
-              Permissions: {
-                disconnect: {
-                  id: permission.id,
-                },
-              },
-            },
-          });
-        });
+        const missingPermissions = permissions.filter(
+          (missingPermission) =>
+            !registeredPermissionsId.includes(missingPermission)
+        );
+        missingPermissions.forEach(
+          async (permission) =>
+            await register.registerPermissionOnRole(userId, permission)
+        );
       } catch (error) {
         throw new Error("Não foi possível excluir permissões já registradas");
       }
+    } else {
+      permissions.forEach(
+        async (permission) =>
+          await register.registerPermissionOnRole(userId, permission)
+      );
     }
-
-    permissions.forEach(async (permission) => {
-      await prisma.role.update({
-        where: {
-          id: roleId,
-        },
-        data: {
-          Permissions: {
-            connect: {
-              id: permission,
-            },
-          },
-        },
-      });
-    });
 
     return await prisma.role.findFirst({
       where: {
